@@ -1,0 +1,18 @@
+# Ignore everything in this repository
+*
+
+# But don't ignore this .gitignore file itself
+!.gitignore
+
+# Allow only the aeb_object_tracking directory
+!aeb_object_tracking/
+!aeb_object_tracking/**
+
+# But ignore PDF files everywhere (even in allowed directories)
+*.pdf
+
+# But ignore build directories everywhere
+**/build/
+**/build/**
+build/
+build/**
