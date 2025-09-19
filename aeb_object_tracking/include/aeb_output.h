@@ -6,16 +6,11 @@
 #ifndef AEB_OBJECT_TRACKING_INCLUDE_AEB_OUTPUT_H
 #define AEB_OBJECT_TRACKING_INCLUDE_AEB_OUTPUT_H
 
-#include <cassert>
-#include <chrono>
-#include <random>
+#include <stddef.h>  // for size_t
 
-namespace aeb
-{
-namespace object_tracking
-{
-namespace output
-{
+namespace aeb {
+namespace object_tracking {
+namespace output {
 
 /// @brief Test output and validation class for AEB Object Tracking System
 /// @details Provides comprehensive testing including performance analysis,
@@ -63,8 +58,8 @@ private:
   static void testModernFeatures();
 };
 
-} // output
-} // object_tracking
-} // aeb
+} // namespace output
+} // namespace object_tracking
+} // namespace aeb
 
 #endif // AEB_OBJECT_TRACKING_INCLUDE_AEB_OUTPUT_H

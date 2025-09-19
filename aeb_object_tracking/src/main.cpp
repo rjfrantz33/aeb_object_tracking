@@ -1,15 +1,17 @@
-/// @file main.cpp 
+/// @file main.cpp
 
-#include "aeb_output.h"
-#include "aeb_tracker.h"
-#include <tuple>
+#include <stddef.h>       // for size_t
+#include <exception>      // for exception
+#include <iostream>       // for operator<<, basic_ostream, cout, endl, basi...
+#include <string>         // for char_traits, allocator, basic_string
+#include <tuple>          // for tuple
+#include <vector>         // for vector
+#include "aeb_output.h"   // for AEBOutput
+#include "aeb_tracker.h"  // for AEBObjectTracker, DetectedObject
 
-namespace aeb
-{
-namespace object_tracking
-{
-namespace output
-{
+namespace aeb {
+namespace object_tracking {
+namespace output {
 
 /// @brief Demonstrate AEB system functionality with realistic traffic scenario
 void demonstrateAEBSystem() {
@@ -34,7 +36,8 @@ void demonstrateAEBSystem() {
 
   // Add objects using simple loop with explicit construction
   for (const auto &[id, distance, velocity] : detected_objects) {
-    aeb_system.addObject(aeb::object_tracking::DetectedObject(id, distance, velocity));
+    aeb_system.addObject(
+        aeb::object_tracking::DetectedObject(id, distance, velocity));
   }
 
   aeb_system.printObjects("All Detected Objects");
@@ -72,9 +75,9 @@ void demonstrateAEBSystem() {
             << objects_within_2s.size() << std::endl;
 }
 
-} // output
-} // object_tracking
-} // aeb
+} // namespace output
+} // namespace object_tracking
+} // namespace aeb
 
 /// @brief Main application entry point
 /// @return Exit status code

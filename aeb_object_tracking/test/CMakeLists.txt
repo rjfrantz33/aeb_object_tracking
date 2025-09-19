@@ -22,6 +22,7 @@ add_executable(aeb_object_tracking_tests ${TEST_SOURCES})
 
 target_link_libraries(aeb_object_tracking_tests 
     PRIVATE 
+        aeb_core
         gtest_main
         gtest
 )

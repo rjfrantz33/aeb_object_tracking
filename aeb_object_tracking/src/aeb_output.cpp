@@ -1,14 +1,17 @@
-/// @file aeb_output.cpp 
+/// @file aeb_output.cpp
 
 #include "aeb_output.h"
-#include "aeb_tracker.h"
+#include <bits/chrono.h>  // for duration, duration_cast, operator-, high_re...
+#include <cassert>        // for assert
+#include <iostream>       // for operator<<, basic_ostream, cout, basic_ostr...
+#include <random>         // for uniform_real_distribution, random_device
+#include <string>         // for char_traits, allocator, basic_string
+#include <vector>         // for vector
+#include "aeb_tracker.h"  // for DetectedObject, AEBObjectTracke
 
-namespace aeb
-{
-namespace object_tracking
-{
-namespace output
-{
+namespace aeb {
+namespace object_tracking {
+namespace output {
 
 /// @brief Run comprehensive test suite with detailed output
 void AEBOutput::runAllTests() {
@@ -33,11 +36,16 @@ void AEBOutput::testBasicSorting() {
   tracker.reserveCapacity(5);
 
   // Add test objects with known collision times
-  tracker.addObject(aeb::object_tracking::DetectedObject(1, 50.0f, -10.0f)); // TTC = 5.0s
-  tracker.addObject(aeb::object_tracking::DetectedObject(2, 20.0f, -20.0f)); // TTC = 1.0s (critical!)
-  tracker.addObject(aeb::object_tracking::DetectedObject(3, 100.0f, 5.0f)); // Moving away (TTC = INF)
-  tracker.addObject(aeb::object_tracking::DetectedObject(4, 30.0f, -15.0f)); // TTC = 2.0s
-  tracker.addObject(aeb::object_tracking::DetectedObject(5, 80.0f, -8.0f));  // TTC = 10.0s
+  tracker.addObject(
+      aeb::object_tracking::DetectedObject(1, 50.0f, -10.0f)); // TTC = 5.0s
+  tracker.addObject(aeb::object_tracking::DetectedObject(
+      2, 20.0f, -20.0f)); // TTC = 1.0s (critical!)
+  tracker.addObject(aeb::object_tracking::DetectedObject(
+      3, 100.0f, 5.0f)); // Moving away (TTC = INF)
+  tracker.addObject(
+      aeb::object_tracking::DetectedObject(4, 30.0f, -15.0f)); // TTC = 2.0s
+  tracker.addObject(
+      aeb::object_tracking::DetectedObject(5, 80.0f, -8.0f)); // TTC = 10.0s
 
   tracker.printObjects("Before Sorting");
 
@@ -73,7 +81,8 @@ void AEBOutput::testPartialSort() {
   for (int i = 1; i <= 20; ++i) {
     const float distance = 10.0f + static_cast<float>(i) * 5.0f;
     const float velocity = -5.0f - static_cast<float>(i % 10);
-    tracker.addObject(aeb::object_tracking::DetectedObject(i, distance, velocity));
+    tracker.addObject(
+        aeb::object_tracking::DetectedObject(i, distance, velocity));
     std::cout << "  Object " << i << ": Distance=" << distance
               << "m, Velocity=" << velocity << "m/s\n";
   }
@@ -121,19 +130,20 @@ void AEBOutput::testMultiCriteriaSort() {
 
   // Add objects with varying threat characteristics
   std::cout << "Adding objects with varying threat profiles:\n";
-  tracker.addObject(
-      aeb::object_tracking::DetectedObject(1, 15.0f, -15.0f)); // High threat, close, fast approach
+  tracker.addObject(aeb::object_tracking::DetectedObject(
+      1, 15.0f, -15.0f)); // High threat, close, fast approach
   std::cout << "  Object 1: Close & Fast (15m, -15m/s)\n";
 
-  tracker.addObject(
-      aeb::object_tracking::DetectedObject(2, 80.0f, -2.0f)); // Low threat, far, slow approach
+  tracker.addObject(aeb::object_tracking::DetectedObject(
+      2, 80.0f, -2.0f)); // Low threat, far, slow approach
   std::cout << "  Object 2: Far & Slow (80m, -2m/s)\n";
 
-  tracker.addObject(aeb::object_tracking::DetectedObject(3, 25.0f, -12.0f)); // Medium threat
+  tracker.addObject(
+      aeb::object_tracking::DetectedObject(3, 25.0f, -12.0f)); // Medium threat
   std::cout << "  Object 3: Medium threat (25m, -12m/s)\n";
 
-  tracker.addObject(
-      aeb::object_tracking::DetectedObject(4, 10.0f, -20.0f)); // Very high threat, very close
+  tracker.addObject(aeb::object_tracking::DetectedObject(
+      4, 10.0f, -20.0f)); // Very high threat, very close
   std::cout << "  Object 4: Very Close & Very Fast (10m, -20m/s)\n";
 
   tracker.printObjects("Before Multi-Criteria Sort");
@@ -185,8 +195,8 @@ void AEBOutput::testPerformance() {
 
     // Generate test data
     for (size_t i = 0; i < kPerformanceTestSize; ++i) {
-      tracker.addObject(
-          aeb::object_tracking::DetectedObject(static_cast<int>(i), dist_range(gen), vel_range(gen)));
+      tracker.addObject(aeb::object_tracking::DetectedObject(
+          static_cast<int>(i), dist_range(gen), vel_range(gen)));
     }
 
     std::cout << "Testing full sort (std::sort)...\n";
@@ -204,8 +214,8 @@ void AEBOutput::testPerformance() {
     tracker2.reserveCapacity(kPerformanceTestSize);
 
     for (size_t i = 0; i < kPerformanceTestSize; ++i) {
-      tracker2.addObject(
-          aeb::object_tracking::DetectedObject(static_cast<int>(i), dist_range(gen), vel_range(gen)));
+      tracker2.addObject(aeb::object_tracking::DetectedObject(
+          static_cast<int>(i), dist_range(gen), vel_range(gen)));
     }
 
     std::cout << "Testing partial sort (top 10 objects)...\n";
@@ -230,12 +240,15 @@ void AEBOutput::testPerformance() {
                      static_cast<double>(partial_sort_time.count())
               << "x\n";
     std::cout << "  Memory Usage (estimated): "
-              << (kPerformanceTestSize * sizeof(aeb::object_tracking::DetectedObject)) / 1024
+              << (kPerformanceTestSize *
+                  sizeof(aeb::object_tracking::DetectedObject)) /
+                     1024
               << " KB\n";
 
     // Real-time performance validation
     std::cout << "\n🚗 Real-time Performance Validation:\n";
-    const float latency_ms = static_cast<float>(partial_sort_time.count()) / 1000.0f;
+    const float latency_ms =
+        static_cast<float>(partial_sort_time.count()) / 1000.0f;
     std::cout << "  Partial sort latency:     " << latency_ms << " ms\n";
 
     if (latency_ms < 10.0f) {
@@ -278,8 +291,10 @@ void AEBOutput::testEdgeCases() {
   std::cout << "\nTesting tie-breaking scenario...\n";
   // Test objects with identical collision times (tie-breaking)
   tracker.clear();
-  tracker.addObject(aeb::object_tracking::DetectedObject(1, 20.0f, -10.0f)); // TTC = 2.0s
-  tracker.addObject(aeb::object_tracking::DetectedObject(2, 40.0f, -20.0f)); // TTC = 2.0s
+  tracker.addObject(
+      aeb::object_tracking::DetectedObject(1, 20.0f, -10.0f)); // TTC = 2.0s
+  tracker.addObject(
+      aeb::object_tracking::DetectedObject(2, 40.0f, -20.0f)); // TTC = 2.0s
 
   std::cout << "  Objects with same TTC (2.0s):\n";
   std::cout << "    Object 1: 20m distance\n";
@@ -306,11 +321,12 @@ void AEBOutput::testModernFeatures() {
   aeb::object_tracking::AEBObjectTracker tracker;
 
   std::cout << "Setting up test scenario...\n";
-  tracker.addObject(
-      aeb::object_tracking::DetectedObject(1, 15.0f, -20.0f)); // Critical object (TTC = 0.75s)
-  tracker.addObject(
-      aeb::object_tracking::DetectedObject(2, 50.0f, -5.0f)); // Less critical (TTC = 10s)
-  tracker.addObject(aeb::object_tracking::DetectedObject(3, 100.0f, 2.0f)); // Moving away (TTC = INF)
+  tracker.addObject(aeb::object_tracking::DetectedObject(
+      1, 15.0f, -20.0f)); // Critical object (TTC = 0.75s)
+  tracker.addObject(aeb::object_tracking::DetectedObject(
+      2, 50.0f, -5.0f)); // Less critical (TTC = 10s)
+  tracker.addObject(aeb::object_tracking::DetectedObject(
+      3, 100.0f, 2.0f)); // Moving away (TTC = INF)
 
   std::cout << "  Object 1: Critical (15m, -20m/s, TTC ≈ 0.75s)\n";
   std::cout << "  Object 2: Moderate (50m, -5m/s, TTC = 10s)\n";
@@ -334,7 +350,8 @@ void AEBOutput::testModernFeatures() {
   std::cout << "\nTesting object search functionality...\n";
 
   // Use explicit type instead of auto
-  std::vector<aeb::object_tracking::DetectedObject>::const_iterator found = tracker.findObjectById(1);
+  std::vector<aeb::object_tracking::DetectedObject>::const_iterator found =
+      tracker.findObjectById(1);
   std::cout << "  Search for Object ID 1: ";
   assert(found != tracker.getObjects().end());
   assert(found->getId() == 1);
@@ -360,6 +377,6 @@ void AEBOutput::testModernFeatures() {
       << "✅ Modern C++ features test passed with result verification\n\n";
 }
 
-} // output
-} // object_tracking
-} // aeb
+} // namespace output
+} // namespace object_tracking
+} // namespace aeb

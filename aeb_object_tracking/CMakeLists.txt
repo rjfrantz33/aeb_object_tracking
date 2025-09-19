@@ -25,25 +25,36 @@ file(GLOB_RECURSE HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
 )
 
-# Add executable
-add_executable(aeb_tracker ${SOURCES} ${HEADERS})
+# Separate main.cpp from library sources
+list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 
-target_include_directories(aeb_tracker
-    PRIVATE
+# Create library for core functionality (excluding main.cpp)
+add_library(aeb_core ${SOURCES} ${HEADERS})
+
+target_include_directories(aeb_core
+    PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-# Compiler options
+# Add executable that uses the library
+add_executable(aeb_tracker src/main.cpp)
+
+target_link_libraries(aeb_tracker
+    PRIVATE
+        aeb_core
+)
+
+# Compiler options for the library (will be inherited by executable)
 if(MSVC)
     # MSVC warnings
-    target_compile_options(aeb_tracker PRIVATE /W4)
+    target_compile_options(aeb_core PUBLIC /W4)
     # Additional MSVC warnings for Debug builds
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        target_compile_options(aeb_tracker PRIVATE /WX)  # Treat warnings as errors
+        target_compile_options(aeb_core PUBLIC /WX)  # Treat warnings as errors
     endif()
 else()
     # Base warnings
-    target_compile_options(aeb_tracker PRIVATE
+    target_compile_options(aeb_core PUBLIC
         -Wall -Wextra -Wpedantic 
         -Wdisabled-optimization -Winit-self -Wnon-virtual-dtor 
         -Wold-style-cast -Woverloaded-virtual -Wparentheses 
@@ -55,7 +66,7 @@ else()
     )
     # GCC-specific additional warnings
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        target_compile_options(aeb_tracker PRIVATE
+        target_compile_options(aeb_core PUBLIC
             -Wuseless-cast -Wdouble-promotion
             -Wnoexcept -Wctor-dtor-privacy
             -Wstrict-null-sentinel -Wzero-as-null-pointer-constant
@@ -63,7 +74,7 @@ else()
     endif()
     # Extra warnings for Debug builds
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        target_compile_options(aeb_tracker PRIVATE -Werror -fno-omit-frame-pointer)
+        target_compile_options(aeb_core PUBLIC -Werror -fno-omit-frame-pointer)
     endif()
 endif()
 
