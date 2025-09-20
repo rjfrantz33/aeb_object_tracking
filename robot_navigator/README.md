@@ -801,3 +801,32 @@ bazel run //robot_navigator:robot_navigator
 ---
 
 **Robot Navigator** - Production-ready navigation with safety-critical standards! 🤖✨
+
+
+## QUALITY_MANAGED (QM) Flags - Automotive Safety Standards
+
+This project uses QUALITY_MANAGED_FLAGS to ensure compliance with MISRA C++ 2023 and AUTOSAR C++14 guidelines for safety-critical automotive development.
+
+### Compiler Warning Flags Applied:
+- **Core Safety**: `-Werror`, `-Wall`, `-Wextra`, `-Wpedantic`
+- **Type Safety**: `-Wcast-align`, `-Wcast-qual`, `-Wconversion`, `-Wsign-conversion`
+- **Memory Safety**: `-Wdouble-promotion`, `-Wfloat-equal`, `-Wformat=2`, `-Wformat-security`
+- **Code Quality**: `-Wmissing-declarations`, `-Wmissing-include-dirs`, `-Wredundant-decls`, `-Wshadow`
+- **Modern C++**: `-Wold-style-cast`, `-Woverloaded-virtual`, `-Wnon-virtual-dtor`
+- **Control Flow**: `-Wundef`, `-Wunreachable-code`, `-Wlogical-op`, `-Wduplicated-cond`
+
+### Build Instructions:
+```bash
+# Build with Bazel (recommended)
+bazel build //...
+
+# Run tests
+bazel test //...
+```
+
+### Safety Standards Compliance:
+- **MISRA C++ 2023**: Automotive software safety guidelines
+- **AUTOSAR C++14**: Automotive Open System Architecture standards
+- **ISO 26262**: Functional safety for automotive systems
+
+
